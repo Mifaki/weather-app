@@ -10,7 +10,7 @@ export default function Home() {
   const [weather, setWeather] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const url = `http://api.weatherapi.com/v1/current.json?key=${process.env.NEXT_PUBLIC_WEATHER_KEY}&q=${city}`;
+  const url = `https://api.weatherapi.com/v1/current.json?key=${process.env.NEXT_PUBLIC_WEATHER_KEY}&q=${city}`;
 
   const fetchWeather = (e) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ export default function Home() {
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
-      const url = `http://api.weatherapi.com/v1/current.json?key=${process.env.NEXT_PUBLIC_WEATHER_KEY}&q=${latitude},${longitude}`;
+      const url = `https://api.weatherapi.com/v1/current.json?key=${process.env.NEXT_PUBLIC_WEATHER_KEY}&q=${latitude},${longitude}`;
       axios.get(url).then((resp) => {
         setWeather(resp.data);
       });
@@ -62,6 +62,8 @@ export default function Home() {
           </button>
         </form>
       </div>
+
+      <p></p>
 
       <Weather data={weather}/>
     </>
