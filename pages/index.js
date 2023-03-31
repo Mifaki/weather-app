@@ -1,10 +1,37 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-
-const inter = Inter({ subsets: ['latin'] })
+import Head from "next/head";
+import Image from "next/image";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { BsSearch } from "react-icons/bs";
+import Weather from "@/components/Weather";
 
 export default function Home() {
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const url = `http://api.weatherapi.com/v1/current.json?key=${process.env.NEXT_PUBLIC_WEATHER_KEY}&q=${city}`;
+
+  const fetchWeather = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    axios.get(url).then((resp) => {
+      setWeather(resp.data);
+    });
+    setCity('');
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      const url = `http://api.weatherapi.com/v1/current.json?key=${process.env.NEXT_PUBLIC_WEATHER_KEY}&q=${latitude},${longitude}`;
+      axios.get(url).then((resp) => {
+        setWeather(resp.data);
+      });
+    });
+  }, []);
+
   return (
     <>
       <Head>
@@ -13,6 +40,30 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Image
+        src="https://images.unsplash.com/photo-1487621167305-5d248087c724?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1332&q=80"
+        alt="bg-image"
+        fill
+        className="object-cover"
+      />
+
+      <div className="relative flex justify-between items-center max-w-[500px] m-auto pt-4 text-black z-10">
+        <form onSubmit={fetchWeather} className="flex justify-between items-center w-full m-auto p-3 bg-transparent border border-black text-black rounded-2xl">
+          <div>
+            <input
+            onChange={(e) => setCity(e.target.value)}
+              className="bg-transparent text-black focus:outline-none placeholder:text-black"
+              type="text"
+              placeholder="Search City"
+            />
+          </div>
+          <button onClick={fetchWeather}>
+            <BsSearch />
+          </button>
+        </form>
+      </div>
+
+      <Weather data={weather}/>
     </>
-  )
+  );
 }
