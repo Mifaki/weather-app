@@ -15,15 +15,17 @@ export default function Home() {
   const fetchWeather = (e) => {
     e.preventDefault();
     setLoading(true);
+    setLoading(true);
     axios.get(url).then((resp) => {
       setWeather(resp.data);
     });
-    setCity('');
+    setCity("");
     setLoading(false);
   };
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
+      setLoading(true);
       const { latitude, longitude } = position.coords;
       const url = `https://api.weatherapi.com/v1/current.json?key=${process.env.NEXT_PUBLIC_WEATHER_KEY}&q=${latitude},${longitude}`;
       axios.get(url).then((resp) => {
@@ -48,10 +50,13 @@ export default function Home() {
       />
 
       <div className="relative flex justify-between items-center max-w-[500px] m-auto pt-4 text-black z-10">
-        <form onSubmit={fetchWeather} className="flex justify-between items-center w-full m-auto p-3 bg-transparent border border-black text-black rounded-2xl">
+        <form
+          onSubmit={fetchWeather}
+          className="flex justify-between items-center w-full m-auto p-3 bg-transparent border border-black text-black rounded-2xl"
+        >
           <div>
             <input
-            onChange={(e) => setCity(e.target.value)}
+              onBlur={(e) => setCity(e.target.value)}
               className="bg-transparent text-black focus:outline-none placeholder:text-black"
               type="text"
               placeholder="Search City"
@@ -63,9 +68,7 @@ export default function Home() {
         </form>
       </div>
 
-      <p></p>
-
-      <Weather data={weather}/>
+      {weather.location && <Weather data={weather} />}
     </>
   );
 }
